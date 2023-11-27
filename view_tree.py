@@ -1,6 +1,6 @@
 from pathlib import Path
 from itertools import islice
-import sys
+
 
 # prefix components:
 space =  '    '
@@ -10,8 +10,7 @@ tee =    '├── '
 last =   '└── '
 
 
-def tree(dir_path: Path, level: int=-1, limit_to_directories: bool=False,
-         length_limit: int=1000):
+def tree(dir_path: Path, level: int=-1, limit_to_directories: bool=False):
     """Given a directory Path object print a visual tree structure"""
     dir_path = Path(dir_path) # accept string coerceable to Path
     files = 0
@@ -30,21 +29,22 @@ def tree(dir_path: Path, level: int=-1, limit_to_directories: bool=False,
                 yield prefix + pointer + path.name
                 directories += 1
                 extension = branch if pointer == tee else space 
-                yield from inner(path, prefix=prefix+extension, level=level-1)
+                yield from inner(path, prefix=prefix + extension, level=level-1)
             elif not limit_to_directories:
                 yield prefix + pointer + path.name
                 files += 1
     print(dir_path.name)
     iterator = inner(dir_path, level=level)
-    for line in islice(iterator, length_limit):
+    for line in islice(iterator):
         print(line)
     if next(iterator, None):
-        print(f'... length_limit, {length_limit}, reached, counted:')
+        print('... length_limit reached, counted:')
     print(f'\n{directories} directories' + (f', {files} files' if files else ''))
 
-p = sys.argv[1] if len(sys.argv) > 1 else '.'
-pp = sys.argv[2] if len(sys.argv) > 2 else ''
-dir = Path(p)
+
+dir_path = input("enter the directory path you want to visualize in tree form : ")
+dir = Path(dir_path)
 for line in tree(dir, limit_to_directories=True):
     print(line)
 
+   
