@@ -1,15 +1,15 @@
 import os
 import sys
-import glob
+# import glob.....unused imports
 import json
 import datetime
 from collections import Counter
-from collections import Counter
+# from collections import Counter....redundant 
 
 import pandas as pd
 from matplotlib import pyplot as plt
-import seaborn as sns
-from nltk.corpus import stopwords
+# import seaborn as sns....unused import
+# from nltk.corpus import stopwords....unused import 
 
 
 def break_combined_weeks(combined_weeks):
@@ -58,7 +58,7 @@ def get_messages_dict(msgs):
             "ts":[],
             "links":[],
             "link_count":[]
-            }
+    }
 
 
     for msg in msgs:
