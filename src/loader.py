@@ -109,7 +109,10 @@ class SlackDataLoader:
         combined = []
         
         
-        
+        # # loop through all folders and extract json files
+        # for item_name in os.listdir(path_channel):
+        #     item_path = os.path.join(path_channel, item_name)
+        #     if os.path.isdir(item_path):
         for json_file in glob.glob(f"{path_channel}/*.json"):
             with open(json_file, 'r', encoding="utf8") as slack_data:
                 slack_data = json.load(slack_data)
@@ -161,12 +164,12 @@ class SlackDataLoader:
         return dfall
 
 
-    def parse_slack_reaction(self, channel):
+    def parse_slack_reaction(self, channel,path_channel):
         
         """get reactions"""
         dfall_reaction = pd.DataFrame()
         combined = []
-        for json_file in glob.glob(f"{self.path}*.json"):
+        for json_file in glob.glob(f"{path_channel}*.json"):
             with open(json_file, 'r') as slack_data:
                 combined.append(slack_data)
 
