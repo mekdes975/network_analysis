@@ -1,14 +1,9 @@
 import json
 import argparse
 import os
-import io
-import shutil
 import pandas as pd 
 import glob 
-import copy
-from datetime import datetime
-from pick import pick
-from time import sleep
+
 
 
 
@@ -112,17 +107,19 @@ class SlackDataLoader:
 
         # specify path to get json files
         combined = []
-        for json_file in glob.glob(f"{path_channel}*.json"):
+        
+        
+        
+        for json_file in glob.glob(f"{path_channel}/*.json"):
             with open(json_file, 'r', encoding="utf8") as slack_data:
+                slack_data = json.load(slack_data)
                 combined.append(slack_data)
-
         # loop through all json files and extract required informations
         dflist = []
         for slack_data in combined:
 
             msg_type, msg_content, sender_id, time_msg, msg_dist, time_thread_st, reply_users, \
             reply_count, reply_users_count, tm_thread_end = [],[],[],[],[],[],[],[],[],[]
-
             for row in slack_data:
                 if 'bot_id' not in row.keys():
                     # removing the else satatement using not 
@@ -157,7 +154,6 @@ class SlackDataLoader:
             df = pd.DataFrame(data=data, columns=columns)
             df = df[df['sender_name'] != 'Not provided']
             dflist.append(df)
-
         dfall = pd.concat(dflist, ignore_index=True)
         dfall['channel'] = path_channel.split('/')[-1].split('.')[0]        
         dfall = dfall.reset_index(drop=True)
@@ -218,6 +214,3 @@ if __name__ == "__main__":
     
     parser.add_argument('--zip', help="Name of a zip file to import")
     args = parser.parse_args()
-
-
-
