@@ -69,9 +69,9 @@ class SlackDataLoader:
             print(f"channel '{channel_name}' not found")
             return messages 
         # reading all the json files in channel folder 
-        channel_folder_path = os.path.join(self.path, channel_id)
+        channel_folder_path = os.path.join(self.path, channel_name)
         for filename in os.listdir(channel_folder_path):
-            if filename.endwith('.json'):
+            if filename.endswith('.json'):
                 file_path = os.path.join(channel_folder_path, filename)
                 with open(file_path, 'r') as f:
                     channel_messages = json.load(f)
