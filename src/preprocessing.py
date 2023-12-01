@@ -1,4 +1,5 @@
 import sys
+import re
 from re import sub
 
 import nltk
@@ -144,3 +145,14 @@ class Preprocessing:
             return self.df
         except Exception:
             sys.exit(1)
+            
+    def preprocess_messages(self,df, col):
+        
+        
+        df[col] = df[col].apply(lambda x: x.lower())
+        df[col] = df[col].apply(lambda x: re.sub('[^a-zA-z0-9\s]', '', x))
+        df[col] = df[col].apply(lambda x: re.sub(' +', ' ', x))
+        df[col] = df[col].apply(lambda x: x.strip())
+        df[col] = df[col].apply(lambda x: re.sub(r'\s+[a-zA-Z]\s+', ' ', x))
+        
+        return df
