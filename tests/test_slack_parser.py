@@ -31,6 +31,11 @@ class TestSlackDataLoader(unittest.TestCase):
 
         self.assertEqual(actual_column_names, expected_column_names)
 
-    
+    def test_get_user_map_returns_tuple(self):
+        
+        result = SlackDataLoader(self.slack_data_path).get_user_map()
+        
+        self.assertIsInstance(result, tuple, msg="Return value is not a tuple")
+
 if __name__ == '__main__':
     unittest.main()
