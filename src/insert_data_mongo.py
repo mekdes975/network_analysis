@@ -1,4 +1,4 @@
-from src import mongodb_functions as MongoDBHandler
+from src import mongo_functions as MongoDBHandler
 import json
 import glob
 import os
