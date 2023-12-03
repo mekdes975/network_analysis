@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
 
 
 # Function to get the top 20 users
@@ -34,15 +35,17 @@ def top_10_senders_eda(df):
     # Plot a bar chart for the top 10 senders by maximum reply_count
     st.bar_chart(top_10_senders.set_index('sender_name'))
     
-# Function to plot distribution of time differences between messages
+    
 def plot_time_differences(df):
     df['msg_sent_time'] = pd.to_datetime(df['msg_sent_time'], unit='s')
     df = df.sort_values(by='msg_sent_time')
     df['time_difference'] = df['msg_sent_time'].diff()
-
-    # Plot the distribution of time differences
-    st.subheader('Distribution of Time Differences Between Messages')
-    st.hist(df['time_difference'].dt.total_seconds(), bins=50, edgecolor='black')
-    st.xlabel('Time Differences (seconds)')
-    st.ylabel('Frequency')
-    st.title('Distribution of Time Differences Between Messages')
+    
+    # Plot a histogram using Matplotlib
+    plt.hist(df['time_difference'].dt.total_seconds(), bins=50, edgecolor='black')
+    plt.xlabel('Time Differences (seconds)')
+    plt.ylabel('Frequency')
+    plt.title('Distribution of Time Differences Between Messages')
+    
+    # Display the plot in Streamlit using st.pyplot()
+    st.pyplot()
