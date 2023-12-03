@@ -39,6 +39,22 @@ def create_tables_from_sql_file(connection, cursor, sql_file_path):
         cursor.execute(sql_file.read())
     connection.commit()
 
+def create_database(dbname, user, password, host, port):
+    """
+    Creates a PostgreSQL database.
+
+    Parameters:
+    - dbname: Name of the new database
+    - user: PostgreSQL superuser username
+    - password: PostgreSQL superuser password
+    - host: PostgreSQL server host
+    - port: PostgreSQL server port
+    """
+    connection, cursor = connect_to_postgres("postgres", user, password, host, port)
+    cursor.execute(f"CREATE DATABASE {dbname}")
+    connection.commit()
+    connection.close()
+
 def read_table_to_dataframe(connection, table_name):
     """
     Reads data from a PostgreSQL table and returns a pandas DataFrame.
