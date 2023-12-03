@@ -62,13 +62,15 @@ def insert_data_into_table(connection, cursor, table_name, data):
     - connection: PostgreSQL database connection object
     - cursor: PostgreSQL database cursor object
     - table_name: Name of the table to insert data into
-    - data: Data to be inserted into the table (formatted as a tuple or list of tuples)
+    - data: Data to be inserted into the table (formatted as a list of dictionaries)
     """
-    placeholders = ', '.join(['%s'] * len(data[0]))
     columns = ', '.join(data[0].keys())
+    placeholders = ', '.join(['%({})s'.format(key) for key in data[0]])
+
     query = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
     cursor.executemany(query, data)
     connection.commit()
+
     
 def delete_table(connection, cursor, table_name):
     """
