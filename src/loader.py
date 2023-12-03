@@ -162,6 +162,76 @@ class SlackDataLoader:
         dfall = dfall.reset_index(drop=True)
         
         return dfall
+    
+    def slack_channels_parser(self, path_channels):
+        #for reading and extracting useful information for json files containing slack data 
+        """ parse slack data to extract useful informations from the json file
+            step of execution
+            1. Import the required modules
+            2. read all json file from the provided path
+            3. combine all json files in the provided path
+            4. extract all required informations from the slack data
+            5. convert to dataframe and merge all
+            6. reset the index and return dataframe
+        """
+
+        # specify path to get json files
+        combined = []
+        
+        
+        # # loop through all folders and extract json files
+        for item_name in os.listdir(path_channels):
+            item_path = os.path.join(path_channels, item_name)
+            if os.path.isdir(item_path):
+                for json_file in glob.glob(f"{item_path}/*.json"):
+                    with open(json_file, 'r', encoding="utf8") as slack_data:
+                        slack_data = json.load(slack_data)
+                        combined.append(slack_data)
+        # loop through all json files and extract required informations
+        dflist = []
+        for slack_data in combined:
+
+            msg_type, msg_content, sender_id, time_msg, msg_dist, time_thread_st, reply_users, \
+            reply_count, reply_users_count, tm_thread_end = [],[],[],[],[],[],[],[],[],[]
+            for row in slack_data:
+                if 'bot_id' not in row.keys():
+                    # removing the else satatement using not 
+                
+                    msg_type.append(row['type'])
+                    msg_content.append(row['text'])
+                    if 'user_profile' in row.keys(): sender_id.append(row['user_profile']['real_name'])
+                    else: sender_id.append('Not provided')
+                    time_msg.append(row['ts'])
+                    if 'blocks' in row.keys() and len(row['blocks'][0]['elements'][0]['elements']) != 0 :
+                        msg_dist.append(row['blocks'][0]['elements'][0]['elements'][0]['type'])
+                    else: msg_dist.append('reshared')
+                    if 'thread_ts' in row.keys():
+                        time_thread_st.append(row['thread_ts'])
+                    else:
+                        time_thread_st.append(0)
+                    if 'reply_users' in row.keys(): reply_users.append(",".join(row['reply_users'])) 
+                    else:    reply_users.append(0)
+                    if 'reply_count' in row.keys():
+                        reply_count.append(row['reply_count'])
+                        reply_users_count.append(row['reply_users_count'])
+                        tm_thread_end.append(row['latest_reply'])
+                    else:
+                        reply_count.append(0)
+                        reply_users_count.append(0)
+                        tm_thread_end.append(0)
+            data = zip(msg_type, msg_content, sender_id, time_msg, msg_dist, time_thread_st,
+            reply_count, reply_users_count, reply_users, tm_thread_end)
+            columns = ['msg_type', 'msg_content', 'sender_name', 'msg_sent_time', 'msg_dist_type',
+            'time_thread_start', 'reply_count', 'reply_users_count', 'reply_users', 'tm_thread_end']
+
+            df = pd.DataFrame(data=data, columns=columns)
+            df = df[df['sender_name'] != 'Not provided']
+            dflist.append(df)
+        dfall = pd.concat(dflist, ignore_index=True)
+        dfall['channel'] = path_channels.split('/')[-1].split('.')[0]        
+        dfall = dfall.reset_index(drop=True)
+        
+        return dfall
 
 
     def parse_slack_reaction(self, channel,path_channel):
@@ -216,4 +286,5 @@ if __name__ == "__main__":
 
     
     parser.add_argument('--zip', help="Name of a zip file to import")
+    
     args = parser.parse_args()
